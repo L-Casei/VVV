@@ -14,8 +14,8 @@ Tactical warfare mod for **vanilla Crusader Kings III**.
 **IMPORTANT:** This is not yet connected to live CK3 armies. CK3 combat still resolves normally. No active battles, regiments or casualties are modified by this alpha.
 
 ## Installation
-1. Put the repository **contents** in `Documents/Paradox Interactive/Crusader Kings III/mod/VVV/` (so `.../VVV/descriptor.mod` exists).
-2. Copy `launcher/VVV.mod` into the parent `mod/` folder as `VVV.mod`.
+1. Run `python -m tools.package` and extract `dist/VVV-0.1.0.zip` into `Documents/Paradox Interactive/Crusader Kings III/mod/` (so `mod/VVV/descriptor.mod` exists).
+2. Check that `VVV.mod` is alongside the `VVV` folder. This package excludes development tools, tests, documentation and Git files.
 3. Enable the mod in the CK3 launcher and load a vanilla campaign.
 4. Click **VVV: Tactics** on the map, then **Reset drill**. Or use the *Tactical Field Exercise* decision.
 5. Check `logs/error.log` if the interface fails to show. This first implementation still requires live-game smoke testing.
@@ -28,3 +28,5 @@ python -m tools.tactics
 Python is a stand-alone testbed; it does **not** execute inside CK3.
 
 See [Architecture](docs/ARCHITECTURE.md), [Testing](docs/TESTING.md), [Roadmap](docs/ROADMAP.md), and [Engine limitations](docs/LIMITATIONS.md).
+
+For a private Steam Workshop upload, follow [the upload checklist](docs/UPLOAD.md).

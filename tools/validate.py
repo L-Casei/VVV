@@ -38,6 +38,22 @@ def balanced(text):
 
 def validate(root=ROOT):
     problems = []
+    thumbnail = root / "thumbnail.png"
+    if not thumbnail.is_file():
+        problems.append("missing thumbnail.png")
+    else:
+        data = thumbnail.read_bytes()
+        if not data.startswith(b"\x89PNG\r\n\x1a\n"):
+            problems.append("thumbnail.png is not a PNG")
+        if len(data) >= 1_000_000:
+            problems.append("thumbnail.png must stay below 1 MB")
+    for name in ("descriptor.mod", "launcher/VVV.mod"):
+        path = root / name
+        if not path.is_file():
+            problems.append(f"missing {name}")
+        elif not re.search(r'^picture\s*=\s*"thumbnail.png"\s*$',
+                           path.read_text(encoding="utf-8-sig"), re.MULTILINE):
+            problems.append(f"missing thumbnail reference in {name}")
     for name in ("descriptor.mod", "common/decisions/vvv_decisions.txt",
                  "gui/vvv_battlefield.gui", "gui/scripted_widgets/vvv_widgets.txt"):
         if not (root / name).is_file():

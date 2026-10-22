@@ -12,6 +12,10 @@ vvv_move_left_effect = {
         limit = { has_variable = vvv_drill_active }
         set_variable = { name = vvv_lane value = 0 }
         change_variable = { name = vvv_momentum add = 1 }
+        if = { limit = { var:vvv_morale < 0 } set_variable = { name = vvv_morale value = 0 } }
+        if = { limit = { var:vvv_morale > 100 } set_variable = { name = vvv_morale value = 100 } }
+        if = { limit = { var:vvv_momentum < 0 } set_variable = { name = vvv_momentum value = 0 } }
+        if = { limit = { var:vvv_momentum > 100 } set_variable = { name = vvv_momentum value = 100 } }
     }
 }
 vvv_move_center_effect = {
@@ -19,6 +23,10 @@ vvv_move_center_effect = {
         limit = { has_variable = vvv_drill_active }
         set_variable = { name = vvv_lane value = 1 }
         change_variable = { name = vvv_momentum add = 1 }
+        if = { limit = { var:vvv_morale < 0 } set_variable = { name = vvv_morale value = 0 } }
+        if = { limit = { var:vvv_morale > 100 } set_variable = { name = vvv_morale value = 100 } }
+        if = { limit = { var:vvv_momentum < 0 } set_variable = { name = vvv_momentum value = 0 } }
+        if = { limit = { var:vvv_momentum > 100 } set_variable = { name = vvv_momentum value = 100 } }
     }
 }
 vvv_move_right_effect = {
@@ -26,6 +34,10 @@ vvv_move_right_effect = {
         limit = { has_variable = vvv_drill_active }
         set_variable = { name = vvv_lane value = 2 }
         change_variable = { name = vvv_momentum add = 1 }
+        if = { limit = { var:vvv_morale < 0 } set_variable = { name = vvv_morale value = 0 } }
+        if = { limit = { var:vvv_morale > 100 } set_variable = { name = vvv_morale value = 100 } }
+        if = { limit = { var:vvv_momentum < 0 } set_variable = { name = vvv_momentum value = 0 } }
+        if = { limit = { var:vvv_momentum > 100 } set_variable = { name = vvv_momentum value = 100 } }
     }
 }
 vvv_hold_effect = {
@@ -33,6 +45,10 @@ vvv_hold_effect = {
         limit = { has_variable = vvv_drill_active }
         change_variable = { name = vvv_morale add = 4 }
         change_variable = { name = vvv_momentum add = -1 }
+        if = { limit = { var:vvv_morale < 0 } set_variable = { name = vvv_morale value = 0 } }
+        if = { limit = { var:vvv_morale > 100 } set_variable = { name = vvv_morale value = 100 } }
+        if = { limit = { var:vvv_momentum < 0 } set_variable = { name = vvv_momentum value = 0 } }
+        if = { limit = { var:vvv_momentum > 100 } set_variable = { name = vvv_momentum value = 100 } }
     }
 }
 vvv_charge_effect = {
@@ -41,6 +57,10 @@ vvv_charge_effect = {
         change_variable = { name = vvv_momentum add = 4 }
         change_variable = { name = vvv_morale add = -6 }
         change_variable = { name = vvv_risk add = 3 }
+        if = { limit = { var:vvv_morale < 0 } set_variable = { name = vvv_morale value = 0 } }
+        if = { limit = { var:vvv_morale > 100 } set_variable = { name = vvv_morale value = 100 } }
+        if = { limit = { var:vvv_momentum < 0 } set_variable = { name = vvv_momentum value = 0 } }
+        if = { limit = { var:vvv_momentum > 100 } set_variable = { name = vvv_momentum value = 100 } }
     }
 }
 vvv_next_round_effect = {
@@ -52,7 +72,9 @@ vvv_next_round_effect = {
             30 = { change_variable = { name = vvv_momentum add = -2 } }
             20 = { change_variable = { name = vvv_risk add = 1 } }
         }
-        clamp_variable = { name = vvv_morale min = 0 max = 100 }
-        clamp_variable = { name = vvv_momentum min = 0 max = 100 }
+        if = { limit = { var:vvv_morale < 0 } set_variable = { name = vvv_morale value = 0 } }
+        if = { limit = { var:vvv_morale > 100 } set_variable = { name = vvv_morale value = 100 } }
+        if = { limit = { var:vvv_momentum < 0 } set_variable = { name = vvv_momentum value = 0 } }
+        if = { limit = { var:vvv_momentum > 100 } set_variable = { name = vvv_momentum value = 100 } }
     }
 }
