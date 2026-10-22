@@ -1,22 +1,27 @@
-# Smoke tests
+# CK3 tactical drill v0.1.1 test checklist
 
-## Static (Python 3.10+)
+## Already verified by user's screenshot
+- The v0.1.0 custom CK3 panel opens on the map, and the standalone button appears.
+- Window positioning on 1366×727 was unsatisfactory (too far left).
+- An uninitialized drill shows all counters at 0 and no own regiment marker.
+
+## Required for updated 0.1.1
+1. Reload CK3 with v0.1.1 installed, ideally with `-debug_mode -develop`.
+2. Verify compact **Tactics** button and **centered** field panel, on a 1366×727 monitor.
+3. Verify the map image is visible and red formation counters render.
+4. Press **Reset drill**: one blue formation must appear in the centre; morale starts at 80.
+5. Press left/right/centre; blue formation should move between three fixed slots.
+6. Charge and hold should adjust the numbers. Next turn increases turn count.
+7. Verify Spanish localization and correct closing/reopening behavior.
+8. Enable **Divine Intervention** alongside VVV, load a new game, and repeat steps 2–6.
+9. Fight a normal CK3 battle; combat must stay unchanged.
+10. Inspect `Documents/Paradox Interactive/Crusader Kings III/logs/error.log`, especially errors referencing `vvv_`, `GuiScope`, `Window_Background`, or the PNG assets.
+
+### Before reporting a failure
+If the blue counter does not spawn after clicking Reset, send the first VVV-related error lines and the game version. The panel rendering does not prove that scripted GUI effects are executing.
+
+## Static verification (Python 3.10+)
 ```bash
 python -m unittest discover -s tests -v
-python -m tools.tactics
+python -m tools.package
 ```
-
-## CK3 (required before claiming game compatibility)
-1. Install, load vanilla 867/1066, enable the mod.
-2. Find **VVV: Tactics / VVV: Tactica** in the map HUD.
-3. Open/close panel repeatedly, press **Reset drill**.
-4. Ensure only one player regiment marker appears (middle lane).
-5. Click deploy left/centre/right: token should change lanes.
-6. Hold and charge should change the displayed morale/momentum/risk.
-7. Advance turn and confirm turn counter updates.
-8. Save/reload: drill character variables should persist. Window open state is client-local.
-9. In Decisions, use **Tactical Field Exercise**. It should start the drill via event.
-10. Start a normal CK3 battle: it must still be vanilla.
-11. Run `-debug_mode` and read `Documents/Paradox Interactive/Crusader Kings III/logs/error.log`. Report any `VVV`, GUI or script errors with game version.
-
-Source checks are not equivalent to the game's actual parser. UI still needs a first live smoke test.

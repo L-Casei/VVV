@@ -8,12 +8,12 @@ def build():
     issues = validate()
     if issues:
         raise SystemExit("\n".join(issues))
-    destination = ROOT / "dist" / "VVV-0.1.0.zip"
+    destination = ROOT / "dist" / "VVV-0.1.1.zip"
     destination.parent.mkdir(exist_ok=True)
     files = [ROOT / "descriptor.mod", ROOT / "thumbnail.png"]
     for directory, extension in (("common", ".txt"), ("events", ".txt"),
                                  ("gui", ".gui"), ("gui", ".txt"),
-                                 ("localization", ".yml")):
+                                 ("localization", ".yml"), ("gfx", ".png")):
         files.extend(sorted((ROOT / directory).rglob("*" + extension)))
     with ZipFile(destination, "w", ZIP_DEFLATED) as archive:
         for source in files:

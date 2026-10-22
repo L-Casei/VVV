@@ -1,13 +1,13 @@
-# No vanilla hud.gui replacement.
+# Standalone widget; does not overwrite vanilla HUD or Divine Intervention widgets.
 window = {
     name = "vvv_hud"
     layer = top
-    size = { 175 40 }
+    size = { 104 37 }
     parentanchor = right|bottom
     position = { -35 -145 }
     visible = "[GetPlayer.IsValid]"
     button_standard = {
-        size = { 175 36 }
+        size = { 104 33 }
         text = "vvv_hud_button"
         tooltip = "vvv_hud_tooltip"
         onclick = "[GetVariableSystem.Toggle('vvv_open_map')]"
