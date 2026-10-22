@@ -18,3 +18,22 @@ jobs:
         run: python -m unittest discover -s tests -v
       - name: Run battlefield demonstration
         run: python -m tools.tactics
+      - name: Package mod with tactical art
+        run: python -m tools.package
+      - name: Verify install archive contents
+        run: |
+          python - <<'PY'
+          from zipfile import ZipFile
+          with ZipFile("dist/VVV-0.1.1.zip") as archive:
+              required = {
+                  "VVV.mod",
+                  "VVV/descriptor.mod",
+                  "VVV/gui/vvv_battlefield.gui",
+                  "VVV/gfx/interface/vvv/tactical_field.png",
+                  "VVV/gfx/interface/vvv/formation_red.png",
+                  "VVV/gfx/interface/vvv/formation_blue.png",
+              }
+              assert required <= set(archive.namelist()), required - set(archive.namelist())
+              for path in sorted(required):
+                  print("OK", path)
+          PY
