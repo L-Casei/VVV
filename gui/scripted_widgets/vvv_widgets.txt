@@ -1,0 +1,2 @@
+gui/vvv_hud.gui = vvv_hud
+gui/vvv_battlefield.gui = vvv_battlefield

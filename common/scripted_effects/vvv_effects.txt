@@ -1,0 +1,58 @@
+# The root is always the player CHARACTER; no real armies are affected.
+vvv_initialize_drill_effect = {
+    set_variable = vvv_drill_active
+    set_variable = { name = vvv_lane value = 1 }
+    set_variable = { name = vvv_round value = 0 }
+    set_variable = { name = vvv_morale value = 80 }
+    set_variable = { name = vvv_momentum value = 0 }
+    set_variable = { name = vvv_risk value = 0 }
+}
+vvv_move_left_effect = {
+    if = {
+        limit = { has_variable = vvv_drill_active }
+        set_variable = { name = vvv_lane value = 0 }
+        change_variable = { name = vvv_momentum add = 1 }
+    }
+}
+vvv_move_center_effect = {
+    if = {
+        limit = { has_variable = vvv_drill_active }
+        set_variable = { name = vvv_lane value = 1 }
+        change_variable = { name = vvv_momentum add = 1 }
+    }
+}
+vvv_move_right_effect = {
+    if = {
+        limit = { has_variable = vvv_drill_active }
+        set_variable = { name = vvv_lane value = 2 }
+        change_variable = { name = vvv_momentum add = 1 }
+    }
+}
+vvv_hold_effect = {
+    if = {
+        limit = { has_variable = vvv_drill_active }
+        change_variable = { name = vvv_morale add = 4 }
+        change_variable = { name = vvv_momentum add = -1 }
+    }
+}
+vvv_charge_effect = {
+    if = {
+        limit = { has_variable = vvv_drill_active }
+        change_variable = { name = vvv_momentum add = 4 }
+        change_variable = { name = vvv_morale add = -6 }
+        change_variable = { name = vvv_risk add = 3 }
+    }
+}
+vvv_next_round_effect = {
+    if = {
+        limit = { has_variable = vvv_drill_active }
+        change_variable = { name = vvv_round add = 1 }
+        random_list = {
+            50 = { change_variable = { name = vvv_morale add = -3 } }
+            30 = { change_variable = { name = vvv_momentum add = -2 } }
+            20 = { change_variable = { name = vvv_risk add = 1 } }
+        }
+        clamp_variable = { name = vvv_morale min = 0 max = 100 }
+        clamp_variable = { name = vvv_momentum min = 0 max = 100 }
+    }
+}

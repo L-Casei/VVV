@@ -1,0 +1,11 @@
+# Root scoping from GetPlayer.MakeScope; predicates control token position.
+vvv_gui_reset = { scope = character effect = { vvv_initialize_drill_effect = yes } }
+vvv_gui_left = { scope = character is_valid = { has_variable = vvv_drill_active } effect = { vvv_move_left_effect = yes } }
+vvv_gui_center = { scope = character is_valid = { has_variable = vvv_drill_active } effect = { vvv_move_center_effect = yes } }
+vvv_gui_right = { scope = character is_valid = { has_variable = vvv_drill_active } effect = { vvv_move_right_effect = yes } }
+vvv_gui_hold = { scope = character is_valid = { has_variable = vvv_drill_active } effect = { vvv_hold_effect = yes } }
+vvv_gui_charge = { scope = character is_valid = { has_variable = vvv_drill_active } effect = { vvv_charge_effect = yes } }
+vvv_gui_next = { scope = character is_valid = { has_variable = vvv_drill_active } effect = { vvv_next_round_effect = yes } }
+vvv_gui_is_left = { scope = character is_shown = { var:vvv_lane = 0 } }
+vvv_gui_is_center = { scope = character is_shown = { var:vvv_lane = 1 } }
+vvv_gui_is_right = { scope = character is_shown = { var:vvv_lane = 2 } }

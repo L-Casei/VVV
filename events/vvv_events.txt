@@ -1,0 +1,11 @@
+namespace = vvv
+vvv.0001 = {
+    type = character_event
+    title = vvv.0001.t
+    desc = vvv.0001.desc
+    option = {
+        name = vvv.0001.a
+        vvv_initialize_drill_effect = yes
+    }
+    option = { name = vvv.0001.b }
+}

@@ -1,0 +1,15 @@
+# No vanilla hud.gui replacement.
+window = {
+    name = "vvv_hud"
+    layer = top
+    size = { 175 40 }
+    parentanchor = right|bottom
+    position = { -35 -145 }
+    visible = "[GetPlayer.IsValid]"
+    button_standard = {
+        size = { 175 36 }
+        text = "vvv_hud_button"
+        tooltip = "vvv_hud_tooltip"
+        onclick = "[GetVariableSystem.Toggle('vvv_open_map')]"
+    }
+}
