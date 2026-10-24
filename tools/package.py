@@ -8,12 +8,15 @@ def build():
     issues = validate()
     if issues:
         raise SystemExit("\n".join(issues))
-    destination = ROOT / "dist" / "VVV-0.1.2.zip"
+    destination = ROOT / "dist" / "VVV-0.1.3.zip"
     destination.parent.mkdir(exist_ok=True)
     files = [ROOT / "descriptor.mod", ROOT / "thumbnail.png"]
+    # Optional local setup helper, standard-library Python only. CK3 ignores it.
+    files += [ROOT / "InstallBattleButton.cmd", ROOT / "tools/__init__.py",
+              ROOT / "tools/validate.py", ROOT / "tools/install_battle_button.py"]
     for directory, extension in (("common", ".txt"), ("events", ".txt"),
                                  ("gui", ".gui"), ("gui", ".txt"),
-                                 ("localization", ".yml"), ("gfx", ".png")):
+                                 ("localization", ".yml"), ("gfx", ".dds")):
         files.extend(sorted((ROOT / directory).rglob("*" + extension)))
     with ZipFile(destination, "w", ZIP_DEFLATED) as archive:
         for source in files:

@@ -1,0 +1,14 @@
+# Instantiated inside combat_window by tools/install_battle_button.py.
+# The native parent controls battle visibility. This only opens the example board.
+types VVVBattleIntegration
+{
+    type vvv_battle_tactics_button = button_standard {
+        name = "vvv_battle_tactics_button"
+        size = { 100 30 }
+        visible = "[GetPlayer.IsValid]"
+        text = "vvv_hud_button"
+        tooltip = "vvv_battle_button_tt"
+        onclick = "[GetScriptedGui('vvv_gui_prepare').Execute( GuiScope.SetRoot( GetPlayer.MakeScope ).End )]"
+        onclick = "[GetVariableSystem.Toggle('vvv_open_map')]"
+    }
+}

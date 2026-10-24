@@ -1,11 +1,24 @@
-# Root scoping from GetPlayer.MakeScope; predicates control token position.
+# Root is always the player character. No real army or combat scope is mutated.
+vvv_gui_prepare = { scope = character effect = { vvv_prepare_board_effect = yes } }
 vvv_gui_reset = { scope = character effect = { vvv_initialize_drill_effect = yes } }
-vvv_gui_left = { scope = character is_valid = { has_variable = vvv_drill_active } effect = { vvv_move_left_effect = yes } }
-vvv_gui_center = { scope = character is_valid = { has_variable = vvv_drill_active } effect = { vvv_move_center_effect = yes } }
-vvv_gui_right = { scope = character is_valid = { has_variable = vvv_drill_active } effect = { vvv_move_right_effect = yes } }
-vvv_gui_hold = { scope = character is_valid = { has_variable = vvv_drill_active } effect = { vvv_hold_effect = yes } }
-vvv_gui_charge = { scope = character is_valid = { has_variable = vvv_drill_active } effect = { vvv_charge_effect = yes } }
-vvv_gui_next = { scope = character is_valid = { has_variable = vvv_drill_active } effect = { vvv_next_round_effect = yes } }
-vvv_gui_is_left = { scope = character is_shown = { var:vvv_lane = 0 } }
-vvv_gui_is_center = { scope = character is_shown = { var:vvv_lane = 1 } }
-vvv_gui_is_right = { scope = character is_shown = { var:vvv_lane = 2 } }
+vvv_gui_left = { scope = character is_valid = { has_variable = vvv_board_ready } effect = { vvv_move_left_effect = yes } }
+vvv_gui_center = { scope = character is_valid = { has_variable = vvv_board_ready } effect = { vvv_move_center_effect = yes } }
+vvv_gui_right = { scope = character is_valid = { has_variable = vvv_board_ready } effect = { vvv_move_right_effect = yes } }
+vvv_gui_hold = { scope = character is_valid = { has_variable = vvv_board_ready } effect = { vvv_hold_effect = yes } }
+vvv_gui_charge = { scope = character is_valid = { has_variable = vvv_board_ready } effect = { vvv_charge_effect = yes } }
+vvv_gui_next = { scope = character is_valid = { has_variable = vvv_board_ready } effect = { vvv_next_round_effect = yes } }
+vvv_gui_select_archers = { scope = character is_valid = { has_variable = vvv_board_ready } effect = { vvv_select_archers_effect = yes } }
+vvv_gui_selected_archers = { scope = character is_shown = { has_variable = vvv_board_ready var:vvv_selected_unit = 0 } }
+vvv_gui_archers_0 = { scope = character is_shown = { has_variable = vvv_board_ready var:vvv_archers_lane = 0 } }
+vvv_gui_archers_1 = { scope = character is_shown = { has_variable = vvv_board_ready var:vvv_archers_lane = 1 } }
+vvv_gui_archers_2 = { scope = character is_shown = { has_variable = vvv_board_ready var:vvv_archers_lane = 2 } }
+vvv_gui_select_levies = { scope = character is_valid = { has_variable = vvv_board_ready } effect = { vvv_select_levies_effect = yes } }
+vvv_gui_selected_levies = { scope = character is_shown = { has_variable = vvv_board_ready var:vvv_selected_unit = 1 } }
+vvv_gui_levies_0 = { scope = character is_shown = { has_variable = vvv_board_ready var:vvv_levies_lane = 0 } }
+vvv_gui_levies_1 = { scope = character is_shown = { has_variable = vvv_board_ready var:vvv_levies_lane = 1 } }
+vvv_gui_levies_2 = { scope = character is_shown = { has_variable = vvv_board_ready var:vvv_levies_lane = 2 } }
+vvv_gui_select_light_infantry = { scope = character is_valid = { has_variable = vvv_board_ready } effect = { vvv_select_light_infantry_effect = yes } }
+vvv_gui_selected_light_infantry = { scope = character is_shown = { has_variable = vvv_board_ready var:vvv_selected_unit = 2 } }
+vvv_gui_light_infantry_0 = { scope = character is_shown = { has_variable = vvv_board_ready var:vvv_light_infantry_lane = 0 } }
+vvv_gui_light_infantry_1 = { scope = character is_shown = { has_variable = vvv_board_ready var:vvv_light_infantry_lane = 1 } }
+vvv_gui_light_infantry_2 = { scope = character is_shown = { has_variable = vvv_board_ready var:vvv_light_infantry_lane = 2 } }

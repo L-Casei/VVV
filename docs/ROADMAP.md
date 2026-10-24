@@ -31,3 +31,12 @@
 - [ ] In-game screenshot confirmation (CK3 GUI scripting cannot be verified by GitHub CI)
 - [ ] Locate and inspect the *actual* CK3 battle view GUI, then place Tactics beside battle actions rather than on world-map HUD
 - [ ] Test coexistence with Divine Intervention
+
+## v0.1.3 reference-driven 2D board
+- [x] Wide illustrated plains with six transparent troop formations
+- [x] Native troop-count text, three selectable friendly groups and lane swaps
+- [x] DDS runtime textures and package validation
+- [x] Local installer for the native battle-window extra-button hook
+- [x] Offline preview from actual GUI coordinates and textures
+- [ ] Verify rendering, battle button and Divine Intervention together in CK3
+- [ ] Bind the panel to the active battle’s real forces
