@@ -1,5 +1,6 @@
 """Lightweight VVV static project validator (not CK3's parser)."""
 import re
+import struct
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -63,6 +64,32 @@ def validate(root=ROOT):
             if path.is_file() and path.suffix in (".txt", ".gui"):
                 if not balanced(path.read_text(encoding="utf-8")):
                     problems.append(f"unbalanced {path}")
+    # Regression: the old PNG GUI paths silently rendered an empty board in CK3.
+    # Every custom runtime texture must exist and use a legacy DirectDraw header.
+    for path in (root / "gui").rglob("*.gui"):
+        for texture in re.findall(r'texture\s*=\s*"(gfx/interface/vvv/[^"\n]+)"',
+                                  path.read_text(encoding="utf-8-sig")):
+            target = root / texture
+            if target.suffix.lower() != ".dds":
+                problems.append(f"custom GUI texture must be DDS: {texture}")
+            elif not target.is_file():
+                problems.append(f"missing GUI texture: {texture}")
+            else:
+                data = target.read_bytes()
+                if len(data) < 128 or data[:4] != b"DDS ":
+                    problems.append(f"invalid DDS header: {texture}")
+                    continue
+                height, width = struct.unpack_from("<II", data, 12)
+                fourcc = data[84:88]
+                if fourcc not in (b"DXT1", b"DXT5") or not width or not height:
+                    problems.append(f"unsupported GUI DDS format: {texture}")
+                else:
+                    block_size = 8 if fourcc == b"DXT1" else 16
+                    expected = ((width + 3) // 4) * ((height + 3) // 4) * block_size
+                    if struct.unpack_from("<I", data, 20)[0] != expected:
+                        problems.append(f"incorrect DDS linear size: {texture}")
+                    if len(data) < 128 + expected:
+                        problems.append(f"truncated DDS pixels: {texture}")
     for path in (root / "localization").rglob("*.yml"):
         data = path.read_bytes()
         if not data.startswith(b"\xef\xbb\xbf"):

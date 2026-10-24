@@ -24,16 +24,31 @@ jobs:
         run: |
           python - <<'PY'
           from zipfile import ZipFile
-          with ZipFile("dist/VVV-0.1.2.zip") as archive:
+          with ZipFile("dist/VVV-0.1.3.zip") as archive:
               required = {
                   "VVV.mod",
                   "VVV/descriptor.mod",
                   "VVV/gui/vvv_battlefield.gui",
-                  "VVV/gfx/interface/vvv/tactical_field.png",
-                  "VVV/gfx/interface/vvv/formation_red.png",
-                  "VVV/gfx/interface/vvv/formation_blue.png",
+                  "VVV/gui/vvv_battle_button.gui",
+                  "VVV/InstallBattleButton.cmd",
+                  "VVV/tools/install_battle_button.py",
+                  "VVV/tools/validate.py",
+                  "VVV/gfx/interface/vvv/plains.dds",
+                  *{
+                      f"VVV/gfx/interface/vvv/{team}_{troop}.dds"
+                      for team in ("red", "blue")
+                      for troop in ("archers", "levies", "light_infantry")
+                  },
               }
               assert required <= set(archive.namelist()), required - set(archive.namelist())
               for path in sorted(required):
                   print("OK", path)
+              assert not any(path.startswith("VVV/art/") for path in archive.namelist())
+              assert not any(path.startswith("VVV/docs/") for path in archive.namelist())
           PY
+      - name: Upload installable mod
+        uses: actions/upload-artifact@v4
+        with:
+          name: VVV-0.1.3
+          path: dist/VVV-0.1.3.zip
+          retention-days: 14

@@ -6,3 +6,6 @@ __pycache__/
 .vscode/
 .DS_Store
 dist/
+# Generated from each user's own CK3 install; never redistribute vanilla GUI.
+gui/window_combat.gui
+*.gui.vvv-backup

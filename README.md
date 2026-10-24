@@ -1,46 +1,61 @@
 # Veni, Vidi, Vici (VVV) ⚔️
+
 Tactical warfare mod for **vanilla Crusader Kings III**.
 
-**Version:** 0.1.2-alpha | **Target:** CK3 1.20.x
+**Version:** 0.1.3-alpha | **Target:** CK3 1.20.x
 
-## What is implemented
-- Custom **2D three-lane battlefield sandbox** inside the CK3 map GUI.
-- A friendly regiment token can move between the left, centre and right lanes.
-- Orders: deploy left/centre/right, hold, charge, advance a drill turn.
-- Save-persistent character variables for lane, round, morale, momentum and risk.
-- A player-only decision to initialize the exercise.
-- A separate deterministic Python tactics **rules lab**, with unit tests.
+## The 2D battlefield
 
-**IMPORTANT:** This is not yet connected to live CK3 armies. CK3 combat still resolves normally. No active battles, regiments or casualties are modified by this alpha.
+![Offline preview of the actual board coordinates and DDS textures](docs/tactics-preview.png)
 
-## Installation
-1. Run `python -m tools.package` and extract `dist/VVV-0.1.2.zip` into `Documents/Paradox Interactive/Crusader Kings III/mod/` (so `mod/VVV/descriptor.mod` exists).
-2. Check that `VVV.mod` is alongside the `VVV` folder. This package excludes development tools, tests, documentation and Git files.
-3. Enable the mod in the CK3 launcher and load a vanilla campaign.
-4. **For UI testing only**, start CK3 with `-debug_mode`. The compact `Tactics` button appears on the map **only in debug mode**, never in ordinary gameplay. Open it, then press **Reset drill**.
-5. Check `logs/error.log` if the interface fails to show. This first implementation still requires live-game smoke testing.
+This is an **offline layout preview**, not an in-game screenshot. Native CK3 window/button skins and fonts are approximated; the terrain, formations, coordinates, troop counts and labels come from the mod's actual files.
 
-## Offline development tests (Python 3.10+)
+- Large, overhead **2D plains battlefield** with separate transparent formations.
+- Red enemy above: **150 archers, 600 levies, 200 light infantry**.
+- Blue army below: **200 archers, 1,000 levies, 300 light infantry**.
+- Counts are native GUI text, not painted into the landscape.
+- Click a blue formation to select it. Left/centre/right exchanges it with the formation occupying that flank, so friendly units remain separate.
+- Reset, hold, charge and turn commands use player-character drill variables.
+- Opening Tactics prepares the board automatically, including on older alpha saves.
+- Runtime art uses **legacy DDS DXT1/DXT5**, with transparent alpha for troops. The old PNG GUI paths are no longer used.
+
+**These are example armies. The panel does not yet read, pause, replace or control live CK3 combat.** Normal battles continue to resolve normally.
+
+## Install and open from a battle
+
+1. Build with `python -m tools.package`, or download the **VVV-0.1.3** artifact from a successful GitHub Actions run.
+2. Extract `VVV-0.1.3.zip` into `Documents/Paradox Interactive/Crusader Kings III/mod/`. Keep `VVV.mod` beside the `VVV` folder.
+3. On Windows, run **`InstallBattleButton.cmd` inside the VVV folder**. It needs Python 3.10+ and attempts to find your Steam installation automatically. It writes only a VVV override, leaving the game installation untouched.
+4. Enable VVV, restart CK3, open an active battle and look for **Tactics beside the native window controls**.
+5. Click Tactics. The six formations and their counts should appear immediately.
+
+If automatic detection fails, run from the VVV directory:
+
 ```bash
+python -m tools.install_battle_button --game-dir "D:/SteamLibrary/steamapps/common/Crusader Kings III"
+```
+
+Re-run the installer after CK3 updates. `--refresh` backs up and refreshes a previous VVV override; it refuses to replace an unrelated override. Other mods replacing `gui/window_combat.gui` need a merged compatibility patch.
+
+**Debug fallback:** with `-debug_mode`, the temporary bottom-right map button still opens the same board. It is hidden in normal play. The repository and CI package intentionally do not redistribute a complete vanilla combat GUI; the local installer supplies the version-specific hook.
+
+## Development and verification
+
+```bash
+python tools/validate.py
 python -m unittest discover -s tests -v
 python -m tools.tactics
+python -m tools.package
 ```
-Python is a stand-alone testbed; it does **not** execute inside CK3.
 
-See [Architecture](docs/ARCHITECTURE.md), [Testing](docs/TESTING.md), [Roadmap](docs/ROADMAP.md), and [Engine limitations](docs/LIMITATIONS.md).
+For art builds and previews, install Pillow 11.3+:
 
-For a private Steam Workshop upload, follow [the upload checklist](docs/UPLOAD.md).
+```bash
+python -m pip install "Pillow>=11.3"
+python -m tools.build_art
+python -m tools.preview_ui
+```
 
-## Visual update (v0.1.1)
-- Main tactics window anchored at the screen **center** with a smaller **Tactics** map button.
-- Original parchment battlefield graphic, enemy and friendly regiment counter art, front-line labels and terrain sectors.
-- Reset prompt while no drill is initialized. **Click Reset drill** once to spawn the blue counter; the initial 0/0/0/0 display is expected before initialization.
-- These assets belong to VVV and must be present in the packaged mod under `gfx/interface/vvv/`.
-- **Divine Intervention compatibility:** no vanilla GUI files are replaced, but UI overlap and scripted GUI interactions still require a combined-mod smoke test.
+Python is a setup/development tool; it **does not run inside CK3**. The installer and static checks use the standard library only.
 
-## v0.1.2 interface refresh
-- 1090 × 606 centered window with **distinct left instruction, middle illustrated battlefield and right order/status regions**.
-- Newly generated, opaque **RGB/truecolor field and army counter textures** replace the subdued paletted graphics that were hard to read.
-- Uses CK3 standard clickable buttons for orders and scripted-UI lane state, leaving normal battles untouched.
-- **No global Tactics button in regular games.** Debugging with `-debug_mode` exposes a temporary opener to test the layout; battle-window integration needs a separate, version-specific vanilla GUI hook.
-- If your game displays the map but does not update drill values when pressing Reset, send `logs/error.log`. That is a scripting issue, not a graphic issue.
+See [testing](docs/TESTING.md), [battle-button integration](docs/BATTLE_VIEW_INTEGRATION.md), [UI research](docs/UI_RESEARCH.md), [architecture](docs/ARCHITECTURE.md), [roadmap](docs/ROADMAP.md), [limitations](docs/LIMITATIONS.md) and [art sources](art/README.md).

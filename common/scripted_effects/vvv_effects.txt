@@ -1,54 +1,195 @@
-# The root is always the player CHARACTER; no real armies are affected.
+# Player CHARACTER scope. All strengths and commands belong to the example drill.
 vvv_initialize_drill_effect = {
     set_variable = vvv_drill_active
+    set_variable = vvv_board_ready
+    set_variable = { name = vvv_selected_unit value = 1 }
     set_variable = { name = vvv_lane value = 1 }
+    set_variable = { name = vvv_archers_lane value = 0 }
+    set_variable = { name = vvv_levies_lane value = 1 }
+    set_variable = { name = vvv_light_infantry_lane value = 2 }
     set_variable = { name = vvv_round value = 0 }
     set_variable = { name = vvv_morale value = 80 }
     set_variable = { name = vvv_momentum value = 0 }
     set_variable = { name = vvv_risk value = 0 }
+    set_variable = { name = vvv_red_archers_count value = 150 }
+    set_variable = { name = vvv_red_levies_count value = 600 }
+    set_variable = { name = vvv_red_light_infantry_count value = 200 }
+    set_variable = { name = vvv_blue_archers_count value = 200 }
+    set_variable = { name = vvv_blue_levies_count value = 1000 }
+    set_variable = { name = vvv_blue_light_infantry_count value = 300 }
 }
+
+# Migrate older alpha saves on first opening without requiring a Reset click.
+vvv_prepare_board_effect = {
+    if = { limit = { NOT = { has_variable = vvv_board_ready } } vvv_initialize_drill_effect = yes }
+}
+
+vvv_clamp_drill_effect = {
+    if = { limit = { var:vvv_morale < 0 } set_variable = { name = vvv_morale value = 0 } }
+    if = { limit = { var:vvv_morale > 100 } set_variable = { name = vvv_morale value = 100 } }
+    if = { limit = { var:vvv_momentum < 0 } set_variable = { name = vvv_momentum value = 0 } }
+    if = { limit = { var:vvv_momentum > 100 } set_variable = { name = vvv_momentum value = 100 } }
+}
+
+vvv_select_archers_effect = {
+    set_variable = { name = vvv_selected_unit value = 0 }
+    set_variable = { name = vvv_lane value = var:vvv_archers_lane }
+}
+
+vvv_select_levies_effect = {
+    set_variable = { name = vvv_selected_unit value = 1 }
+    set_variable = { name = vvv_lane value = var:vvv_levies_lane }
+}
+
+vvv_select_light_infantry_effect = {
+    set_variable = { name = vvv_selected_unit value = 2 }
+    set_variable = { name = vvv_lane value = var:vvv_light_infantry_lane }
+}
+
+# Exchange occupied lanes so two friendly formations never cover each other.
 vvv_move_left_effect = {
     if = {
         limit = { has_variable = vvv_drill_active }
+        if = {
+            limit = { var:vvv_selected_unit = 0 }
+            if = {
+                limit = { var:vvv_levies_lane = 0 }
+                set_variable = { name = vvv_levies_lane value = var:vvv_archers_lane }
+            }
+            if = {
+                limit = { var:vvv_light_infantry_lane = 0 }
+                set_variable = { name = vvv_light_infantry_lane value = var:vvv_archers_lane }
+            }
+            set_variable = { name = vvv_archers_lane value = 0 }
+        }
+        else_if = {
+            limit = { var:vvv_selected_unit = 1 }
+            if = {
+                limit = { var:vvv_archers_lane = 0 }
+                set_variable = { name = vvv_archers_lane value = var:vvv_levies_lane }
+            }
+            if = {
+                limit = { var:vvv_light_infantry_lane = 0 }
+                set_variable = { name = vvv_light_infantry_lane value = var:vvv_levies_lane }
+            }
+            set_variable = { name = vvv_levies_lane value = 0 }
+        }
+        else_if = {
+            limit = { var:vvv_selected_unit = 2 }
+            if = {
+                limit = { var:vvv_archers_lane = 0 }
+                set_variable = { name = vvv_archers_lane value = var:vvv_light_infantry_lane }
+            }
+            if = {
+                limit = { var:vvv_levies_lane = 0 }
+                set_variable = { name = vvv_levies_lane value = var:vvv_light_infantry_lane }
+            }
+            set_variable = { name = vvv_light_infantry_lane value = 0 }
+        }
         set_variable = { name = vvv_lane value = 0 }
         change_variable = { name = vvv_momentum add = 1 }
-        if = { limit = { var:vvv_morale < 0 } set_variable = { name = vvv_morale value = 0 } }
-        if = { limit = { var:vvv_morale > 100 } set_variable = { name = vvv_morale value = 100 } }
-        if = { limit = { var:vvv_momentum < 0 } set_variable = { name = vvv_momentum value = 0 } }
-        if = { limit = { var:vvv_momentum > 100 } set_variable = { name = vvv_momentum value = 100 } }
+        vvv_clamp_drill_effect = yes
     }
 }
+
+# Exchange occupied lanes so two friendly formations never cover each other.
 vvv_move_center_effect = {
     if = {
         limit = { has_variable = vvv_drill_active }
+        if = {
+            limit = { var:vvv_selected_unit = 0 }
+            if = {
+                limit = { var:vvv_levies_lane = 1 }
+                set_variable = { name = vvv_levies_lane value = var:vvv_archers_lane }
+            }
+            if = {
+                limit = { var:vvv_light_infantry_lane = 1 }
+                set_variable = { name = vvv_light_infantry_lane value = var:vvv_archers_lane }
+            }
+            set_variable = { name = vvv_archers_lane value = 1 }
+        }
+        else_if = {
+            limit = { var:vvv_selected_unit = 1 }
+            if = {
+                limit = { var:vvv_archers_lane = 1 }
+                set_variable = { name = vvv_archers_lane value = var:vvv_levies_lane }
+            }
+            if = {
+                limit = { var:vvv_light_infantry_lane = 1 }
+                set_variable = { name = vvv_light_infantry_lane value = var:vvv_levies_lane }
+            }
+            set_variable = { name = vvv_levies_lane value = 1 }
+        }
+        else_if = {
+            limit = { var:vvv_selected_unit = 2 }
+            if = {
+                limit = { var:vvv_archers_lane = 1 }
+                set_variable = { name = vvv_archers_lane value = var:vvv_light_infantry_lane }
+            }
+            if = {
+                limit = { var:vvv_levies_lane = 1 }
+                set_variable = { name = vvv_levies_lane value = var:vvv_light_infantry_lane }
+            }
+            set_variable = { name = vvv_light_infantry_lane value = 1 }
+        }
         set_variable = { name = vvv_lane value = 1 }
         change_variable = { name = vvv_momentum add = 1 }
-        if = { limit = { var:vvv_morale < 0 } set_variable = { name = vvv_morale value = 0 } }
-        if = { limit = { var:vvv_morale > 100 } set_variable = { name = vvv_morale value = 100 } }
-        if = { limit = { var:vvv_momentum < 0 } set_variable = { name = vvv_momentum value = 0 } }
-        if = { limit = { var:vvv_momentum > 100 } set_variable = { name = vvv_momentum value = 100 } }
+        vvv_clamp_drill_effect = yes
     }
 }
+
+# Exchange occupied lanes so two friendly formations never cover each other.
 vvv_move_right_effect = {
     if = {
         limit = { has_variable = vvv_drill_active }
+        if = {
+            limit = { var:vvv_selected_unit = 0 }
+            if = {
+                limit = { var:vvv_levies_lane = 2 }
+                set_variable = { name = vvv_levies_lane value = var:vvv_archers_lane }
+            }
+            if = {
+                limit = { var:vvv_light_infantry_lane = 2 }
+                set_variable = { name = vvv_light_infantry_lane value = var:vvv_archers_lane }
+            }
+            set_variable = { name = vvv_archers_lane value = 2 }
+        }
+        else_if = {
+            limit = { var:vvv_selected_unit = 1 }
+            if = {
+                limit = { var:vvv_archers_lane = 2 }
+                set_variable = { name = vvv_archers_lane value = var:vvv_levies_lane }
+            }
+            if = {
+                limit = { var:vvv_light_infantry_lane = 2 }
+                set_variable = { name = vvv_light_infantry_lane value = var:vvv_levies_lane }
+            }
+            set_variable = { name = vvv_levies_lane value = 2 }
+        }
+        else_if = {
+            limit = { var:vvv_selected_unit = 2 }
+            if = {
+                limit = { var:vvv_archers_lane = 2 }
+                set_variable = { name = vvv_archers_lane value = var:vvv_light_infantry_lane }
+            }
+            if = {
+                limit = { var:vvv_levies_lane = 2 }
+                set_variable = { name = vvv_levies_lane value = var:vvv_light_infantry_lane }
+            }
+            set_variable = { name = vvv_light_infantry_lane value = 2 }
+        }
         set_variable = { name = vvv_lane value = 2 }
         change_variable = { name = vvv_momentum add = 1 }
-        if = { limit = { var:vvv_morale < 0 } set_variable = { name = vvv_morale value = 0 } }
-        if = { limit = { var:vvv_morale > 100 } set_variable = { name = vvv_morale value = 100 } }
-        if = { limit = { var:vvv_momentum < 0 } set_variable = { name = vvv_momentum value = 0 } }
-        if = { limit = { var:vvv_momentum > 100 } set_variable = { name = vvv_momentum value = 100 } }
+        vvv_clamp_drill_effect = yes
     }
 }
+
 vvv_hold_effect = {
     if = {
         limit = { has_variable = vvv_drill_active }
         change_variable = { name = vvv_morale add = 4 }
         change_variable = { name = vvv_momentum add = -1 }
-        if = { limit = { var:vvv_morale < 0 } set_variable = { name = vvv_morale value = 0 } }
-        if = { limit = { var:vvv_morale > 100 } set_variable = { name = vvv_morale value = 100 } }
-        if = { limit = { var:vvv_momentum < 0 } set_variable = { name = vvv_momentum value = 0 } }
-        if = { limit = { var:vvv_momentum > 100 } set_variable = { name = vvv_momentum value = 100 } }
+        vvv_clamp_drill_effect = yes
     }
 }
 vvv_charge_effect = {
@@ -57,10 +198,7 @@ vvv_charge_effect = {
         change_variable = { name = vvv_momentum add = 4 }
         change_variable = { name = vvv_morale add = -6 }
         change_variable = { name = vvv_risk add = 3 }
-        if = { limit = { var:vvv_morale < 0 } set_variable = { name = vvv_morale value = 0 } }
-        if = { limit = { var:vvv_morale > 100 } set_variable = { name = vvv_morale value = 100 } }
-        if = { limit = { var:vvv_momentum < 0 } set_variable = { name = vvv_momentum value = 0 } }
-        if = { limit = { var:vvv_momentum > 100 } set_variable = { name = vvv_momentum value = 100 } }
+        vvv_clamp_drill_effect = yes
     }
 }
 vvv_next_round_effect = {
@@ -72,9 +210,6 @@ vvv_next_round_effect = {
             30 = { change_variable = { name = vvv_momentum add = -2 } }
             20 = { change_variable = { name = vvv_risk add = 1 } }
         }
-        if = { limit = { var:vvv_morale < 0 } set_variable = { name = vvv_morale value = 0 } }
-        if = { limit = { var:vvv_morale > 100 } set_variable = { name = vvv_morale value = 100 } }
-        if = { limit = { var:vvv_momentum < 0 } set_variable = { name = vvv_momentum value = 0 } }
-        if = { limit = { var:vvv_momentum > 100 } set_variable = { name = vvv_momentum value = 100 } }
+        vvv_clamp_drill_effect = yes
     }
 }

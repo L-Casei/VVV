@@ -1,135 +1,382 @@
-# VVV 0.1.2 -- visually isolated tactical planning sandbox.
-# IMPORTANT: only a scripted widget, NOT hooked to the vanilla battle view yet.
+# VVV 0.1.3: native 2D board. Text, selection and orders remain live GUI elements.
+# Demo army strengths are deliberately independent of real CK3 combat.
 window = {
     name = "vvv_battlefield"
     layer = top
-    size = { 1090 606 }
+    size = { 1060 672 }
     parentanchor = center
     movable = yes
     visible = "[And( GetPlayer.IsValid, GetVariableSystem.Exists('vvv_open_map') )]"
     using = Window_Background
+    allow_outside = no
 
-    text_single = { position = { 31 21 } text = "vvv_panel_title" using = Font_Size_Large }
-    text_single = { position = { 32 58 } text = "vvv_panel_subtitle" }
-    button_standard = { position = { 969 20 } size = { 93 29 } text = "vvv_close" onclick = "[GetVariableSystem.Clear('vvv_open_map')]" }
+    text_single = { position = { 22 10 } size = { 180 34 } autoresize = no align = left|nobaseline fontsize = 24 text = "vvv_panel_title"  }
+    text_single = { position = { 205 14 } size = { 650 30 } autoresize = no align = left|nobaseline fontsize = 15 text = "vvv_panel_subtitle"  }
+    button_standard = { position = { 945 15 } size = { 93 30 } text = "vvv_close" onclick = "[GetVariableSystem.Clear('vvv_open_map')]" }
 
-    # Keep flank controls separate from the battlefield.
-    button_standard = { position = { 21 99 } size = { 205 460 } enabled = no }
-    button_standard = { position = { 862 99 } size = { 204 460 } enabled = no }
-    text_single = { position = { 35 113 } text = "vvv_left_panel_title" using = Font_Size_Medium }
-    text_single = { position = { 35 158 } text = "vvv_left_panel_step1" }
-    text_single = { position = { 35 188 } text = "vvv_left_panel_step2" }
-    text_single = { position = { 35 218 } text = "vvv_left_panel_step3" }
-    text_single = { position = { 35 281 } text = "vvv_left_panel_terrain" using = Font_Size_Medium }
-    text_single = { position = { 35 326 } text = "vvv_terrain_left" }
-    text_single = { position = { 35 358 } text = "vvv_terrain_center" }
-    text_single = { position = { 35 390 } text = "vvv_terrain_right" }
-    text_single = { position = { 35 455 } text = "vvv_left_panel_note" }
-
-    text_single = { position = { 251 106 } text = "vvv_enemy_line" }
-    text_single = { position = { 695 106 } text = "vvv_field_label" }
-    icon = {
-        position = { 247 139 }
-        size = { 590 330 }
-        spriteType = Texture
-        texture = "gfx/interface/vvv/tactical_field.png"
+    widget = {
+        name = "vvv_board"
+        position = { 18 56 }
+        size = { 1024 512 }
+        icon = {
+            name = "vvv_plains"
+            size = { 1024 512 }
+            texture = "gfx/interface/vvv/plains.dds"
+            alwaystransparent = yes
+        }
+        widget = {
+            name = "vvv_red_archers"
+            position = { 120 0 }
+            size = { 224 196 }
+            tooltip = "vvv_archers_tt"
+            using = tooltip_above
+            icon = { size = { 224 196 } texture = "gfx/interface/vvv/red_archers.dds" alwaystransparent = yes }
+            text_single = {
+                position = { 72 58 }
+                size = { 80 23 }
+                autoresize = no
+                align = center|nobaseline
+                font = TitleFont
+                fontsize = 21
+                default_format = "#high"
+                text = "[GetPlayer.MakeScope.Var('vvv_red_archers_count').GetValue|0]"
+                alwaystransparent = yes
+            }
+        }
+        widget = {
+            name = "vvv_red_levies"
+            position = { 400 0 }
+            size = { 224 196 }
+            tooltip = "vvv_levies_tt"
+            using = tooltip_above
+            icon = { size = { 224 196 } texture = "gfx/interface/vvv/red_levies.dds" alwaystransparent = yes }
+            text_single = {
+                position = { 72 58 }
+                size = { 80 23 }
+                autoresize = no
+                align = center|nobaseline
+                font = TitleFont
+                fontsize = 21
+                default_format = "#high"
+                text = "[GetPlayer.MakeScope.Var('vvv_red_levies_count').GetValue|0]"
+                alwaystransparent = yes
+            }
+        }
+        widget = {
+            name = "vvv_red_light_infantry"
+            position = { 680 0 }
+            size = { 224 196 }
+            tooltip = "vvv_light_infantry_tt"
+            using = tooltip_above
+            icon = { size = { 224 196 } texture = "gfx/interface/vvv/red_light_infantry.dds" alwaystransparent = yes }
+            text_single = {
+                position = { 72 58 }
+                size = { 80 23 }
+                autoresize = no
+                align = center|nobaseline
+                font = TitleFont
+                fontsize = 21
+                default_format = "#high"
+                text = "[GetPlayer.MakeScope.Var('vvv_red_light_infantry_count').GetValue|0]"
+                alwaystransparent = yes
+            }
+        }
+        button = {
+            name = "vvv_blue_archers_0"
+            position = { 120 310 }
+            size = { 224 196 }
+            tooltip = "vvv_archers_tt"
+            using = tooltip_above
+            visible = "[GetScriptedGui('vvv_gui_archers_0').IsShown( GuiScope.SetRoot( GetPlayer.MakeScope ).End )]"
+            onclick = "[GetScriptedGui('vvv_gui_select_archers').Execute( GuiScope.SetRoot( GetPlayer.MakeScope ).End )]"
+            icon = {
+                position = { 34 191 } size = { 156 3 }
+                texture = "gfx/interface/colors/gold.dds"
+                visible = "[GetScriptedGui('vvv_gui_selected_archers').IsShown( GuiScope.SetRoot( GetPlayer.MakeScope ).End )]"
+                alwaystransparent = yes
+            }
+            icon = { size = { 224 196 } texture = "gfx/interface/vvv/blue_archers.dds" alwaystransparent = yes }
+            text_single = {
+                position = { 72 58 }
+                size = { 80 23 }
+                autoresize = no
+                align = center|nobaseline
+                font = TitleFont
+                fontsize = 21
+                default_format = "#high"
+                text = "[GetPlayer.MakeScope.Var('vvv_blue_archers_count').GetValue|0]"
+                alwaystransparent = yes
+            }
+        }
+        button = {
+            name = "vvv_blue_archers_1"
+            position = { 400 310 }
+            size = { 224 196 }
+            tooltip = "vvv_archers_tt"
+            using = tooltip_above
+            visible = "[GetScriptedGui('vvv_gui_archers_1').IsShown( GuiScope.SetRoot( GetPlayer.MakeScope ).End )]"
+            onclick = "[GetScriptedGui('vvv_gui_select_archers').Execute( GuiScope.SetRoot( GetPlayer.MakeScope ).End )]"
+            icon = {
+                position = { 34 191 } size = { 156 3 }
+                texture = "gfx/interface/colors/gold.dds"
+                visible = "[GetScriptedGui('vvv_gui_selected_archers').IsShown( GuiScope.SetRoot( GetPlayer.MakeScope ).End )]"
+                alwaystransparent = yes
+            }
+            icon = { size = { 224 196 } texture = "gfx/interface/vvv/blue_archers.dds" alwaystransparent = yes }
+            text_single = {
+                position = { 72 58 }
+                size = { 80 23 }
+                autoresize = no
+                align = center|nobaseline
+                font = TitleFont
+                fontsize = 21
+                default_format = "#high"
+                text = "[GetPlayer.MakeScope.Var('vvv_blue_archers_count').GetValue|0]"
+                alwaystransparent = yes
+            }
+        }
+        button = {
+            name = "vvv_blue_archers_2"
+            position = { 680 310 }
+            size = { 224 196 }
+            tooltip = "vvv_archers_tt"
+            using = tooltip_above
+            visible = "[GetScriptedGui('vvv_gui_archers_2').IsShown( GuiScope.SetRoot( GetPlayer.MakeScope ).End )]"
+            onclick = "[GetScriptedGui('vvv_gui_select_archers').Execute( GuiScope.SetRoot( GetPlayer.MakeScope ).End )]"
+            icon = {
+                position = { 34 191 } size = { 156 3 }
+                texture = "gfx/interface/colors/gold.dds"
+                visible = "[GetScriptedGui('vvv_gui_selected_archers').IsShown( GuiScope.SetRoot( GetPlayer.MakeScope ).End )]"
+                alwaystransparent = yes
+            }
+            icon = { size = { 224 196 } texture = "gfx/interface/vvv/blue_archers.dds" alwaystransparent = yes }
+            text_single = {
+                position = { 72 58 }
+                size = { 80 23 }
+                autoresize = no
+                align = center|nobaseline
+                font = TitleFont
+                fontsize = 21
+                default_format = "#high"
+                text = "[GetPlayer.MakeScope.Var('vvv_blue_archers_count').GetValue|0]"
+                alwaystransparent = yes
+            }
+        }
+        button = {
+            name = "vvv_blue_levies_0"
+            position = { 120 310 }
+            size = { 224 196 }
+            tooltip = "vvv_levies_tt"
+            using = tooltip_above
+            visible = "[GetScriptedGui('vvv_gui_levies_0').IsShown( GuiScope.SetRoot( GetPlayer.MakeScope ).End )]"
+            onclick = "[GetScriptedGui('vvv_gui_select_levies').Execute( GuiScope.SetRoot( GetPlayer.MakeScope ).End )]"
+            icon = {
+                position = { 34 191 } size = { 156 3 }
+                texture = "gfx/interface/colors/gold.dds"
+                visible = "[GetScriptedGui('vvv_gui_selected_levies').IsShown( GuiScope.SetRoot( GetPlayer.MakeScope ).End )]"
+                alwaystransparent = yes
+            }
+            icon = { size = { 224 196 } texture = "gfx/interface/vvv/blue_levies.dds" alwaystransparent = yes }
+            text_single = {
+                position = { 72 58 }
+                size = { 80 23 }
+                autoresize = no
+                align = center|nobaseline
+                font = TitleFont
+                fontsize = 21
+                default_format = "#high"
+                text = "[GetPlayer.MakeScope.Var('vvv_blue_levies_count').GetValue|0]"
+                alwaystransparent = yes
+            }
+        }
+        button = {
+            name = "vvv_blue_levies_1"
+            position = { 400 310 }
+            size = { 224 196 }
+            tooltip = "vvv_levies_tt"
+            using = tooltip_above
+            visible = "[GetScriptedGui('vvv_gui_levies_1').IsShown( GuiScope.SetRoot( GetPlayer.MakeScope ).End )]"
+            onclick = "[GetScriptedGui('vvv_gui_select_levies').Execute( GuiScope.SetRoot( GetPlayer.MakeScope ).End )]"
+            icon = {
+                position = { 34 191 } size = { 156 3 }
+                texture = "gfx/interface/colors/gold.dds"
+                visible = "[GetScriptedGui('vvv_gui_selected_levies').IsShown( GuiScope.SetRoot( GetPlayer.MakeScope ).End )]"
+                alwaystransparent = yes
+            }
+            icon = { size = { 224 196 } texture = "gfx/interface/vvv/blue_levies.dds" alwaystransparent = yes }
+            text_single = {
+                position = { 72 58 }
+                size = { 80 23 }
+                autoresize = no
+                align = center|nobaseline
+                font = TitleFont
+                fontsize = 21
+                default_format = "#high"
+                text = "[GetPlayer.MakeScope.Var('vvv_blue_levies_count').GetValue|0]"
+                alwaystransparent = yes
+            }
+        }
+        button = {
+            name = "vvv_blue_levies_2"
+            position = { 680 310 }
+            size = { 224 196 }
+            tooltip = "vvv_levies_tt"
+            using = tooltip_above
+            visible = "[GetScriptedGui('vvv_gui_levies_2').IsShown( GuiScope.SetRoot( GetPlayer.MakeScope ).End )]"
+            onclick = "[GetScriptedGui('vvv_gui_select_levies').Execute( GuiScope.SetRoot( GetPlayer.MakeScope ).End )]"
+            icon = {
+                position = { 34 191 } size = { 156 3 }
+                texture = "gfx/interface/colors/gold.dds"
+                visible = "[GetScriptedGui('vvv_gui_selected_levies').IsShown( GuiScope.SetRoot( GetPlayer.MakeScope ).End )]"
+                alwaystransparent = yes
+            }
+            icon = { size = { 224 196 } texture = "gfx/interface/vvv/blue_levies.dds" alwaystransparent = yes }
+            text_single = {
+                position = { 72 58 }
+                size = { 80 23 }
+                autoresize = no
+                align = center|nobaseline
+                font = TitleFont
+                fontsize = 21
+                default_format = "#high"
+                text = "[GetPlayer.MakeScope.Var('vvv_blue_levies_count').GetValue|0]"
+                alwaystransparent = yes
+            }
+        }
+        button = {
+            name = "vvv_blue_light_infantry_0"
+            position = { 120 310 }
+            size = { 224 196 }
+            tooltip = "vvv_light_infantry_tt"
+            using = tooltip_above
+            visible = "[GetScriptedGui('vvv_gui_light_infantry_0').IsShown( GuiScope.SetRoot( GetPlayer.MakeScope ).End )]"
+            onclick = "[GetScriptedGui('vvv_gui_select_light_infantry').Execute( GuiScope.SetRoot( GetPlayer.MakeScope ).End )]"
+            icon = {
+                position = { 34 191 } size = { 156 3 }
+                texture = "gfx/interface/colors/gold.dds"
+                visible = "[GetScriptedGui('vvv_gui_selected_light_infantry').IsShown( GuiScope.SetRoot( GetPlayer.MakeScope ).End )]"
+                alwaystransparent = yes
+            }
+            icon = { size = { 224 196 } texture = "gfx/interface/vvv/blue_light_infantry.dds" alwaystransparent = yes }
+            text_single = {
+                position = { 72 58 }
+                size = { 80 23 }
+                autoresize = no
+                align = center|nobaseline
+                font = TitleFont
+                fontsize = 21
+                default_format = "#high"
+                text = "[GetPlayer.MakeScope.Var('vvv_blue_light_infantry_count').GetValue|0]"
+                alwaystransparent = yes
+            }
+        }
+        button = {
+            name = "vvv_blue_light_infantry_1"
+            position = { 400 310 }
+            size = { 224 196 }
+            tooltip = "vvv_light_infantry_tt"
+            using = tooltip_above
+            visible = "[GetScriptedGui('vvv_gui_light_infantry_1').IsShown( GuiScope.SetRoot( GetPlayer.MakeScope ).End )]"
+            onclick = "[GetScriptedGui('vvv_gui_select_light_infantry').Execute( GuiScope.SetRoot( GetPlayer.MakeScope ).End )]"
+            icon = {
+                position = { 34 191 } size = { 156 3 }
+                texture = "gfx/interface/colors/gold.dds"
+                visible = "[GetScriptedGui('vvv_gui_selected_light_infantry').IsShown( GuiScope.SetRoot( GetPlayer.MakeScope ).End )]"
+                alwaystransparent = yes
+            }
+            icon = { size = { 224 196 } texture = "gfx/interface/vvv/blue_light_infantry.dds" alwaystransparent = yes }
+            text_single = {
+                position = { 72 58 }
+                size = { 80 23 }
+                autoresize = no
+                align = center|nobaseline
+                font = TitleFont
+                fontsize = 21
+                default_format = "#high"
+                text = "[GetPlayer.MakeScope.Var('vvv_blue_light_infantry_count').GetValue|0]"
+                alwaystransparent = yes
+            }
+        }
+        button = {
+            name = "vvv_blue_light_infantry_2"
+            position = { 680 310 }
+            size = { 224 196 }
+            tooltip = "vvv_light_infantry_tt"
+            using = tooltip_above
+            visible = "[GetScriptedGui('vvv_gui_light_infantry_2').IsShown( GuiScope.SetRoot( GetPlayer.MakeScope ).End )]"
+            onclick = "[GetScriptedGui('vvv_gui_select_light_infantry').Execute( GuiScope.SetRoot( GetPlayer.MakeScope ).End )]"
+            icon = {
+                position = { 34 191 } size = { 156 3 }
+                texture = "gfx/interface/colors/gold.dds"
+                visible = "[GetScriptedGui('vvv_gui_selected_light_infantry').IsShown( GuiScope.SetRoot( GetPlayer.MakeScope ).End )]"
+                alwaystransparent = yes
+            }
+            icon = { size = { 224 196 } texture = "gfx/interface/vvv/blue_light_infantry.dds" alwaystransparent = yes }
+            text_single = {
+                position = { 72 58 }
+                size = { 80 23 }
+                autoresize = no
+                align = center|nobaseline
+                font = TitleFont
+                fontsize = 21
+                default_format = "#high"
+                text = "[GetPlayer.MakeScope.Var('vvv_blue_light_infantry_count').GetValue|0]"
+                alwaystransparent = yes
+            }
+        }
     }
 
-    icon = { position = { 270 176 } size = { 165 47 } spriteType = Texture texture = "gfx/interface/vvv/formation_red.png" }
-    text_single = { position = { 318 191 } text = "vvv_enemy_left" }
-    text_single = { position = { 340 289 } text = "vvv_terrain_left" }
-
-    icon = { position = { 464 176 } size = { 165 47 } spriteType = Texture texture = "gfx/interface/vvv/formation_red.png" }
-    text_single = { position = { 512 191 } text = "vvv_enemy_center" }
-    text_single = { position = { 534 289 } text = "vvv_terrain_center" }
-
-    icon = { position = { 658 176 } size = { 165 47 } spriteType = Texture texture = "gfx/interface/vvv/formation_red.png" }
-    text_single = { position = { 706 191 } text = "vvv_enemy_right" }
-    text_single = { position = { 728 289 } text = "vvv_terrain_right" }
-
-    # Player formation is only visible after the user initializes the drill.
-    text_single = { position = { 395 339 } text = "vvv_prompt_reset" visible = "[Not( GetPlayer.MakeScope.Var('vvv_drill_active').IsSet )]" }
-
-    icon = {
-        position = { 270 384 }
-        size = { 165 47 }
-        spriteType = Texture
-        texture = "gfx/interface/vvv/formation_blue.png"
-        visible = "[GetScriptedGui('vvv_gui_is_left').IsShown( GuiScope.SetRoot( GetPlayer.MakeScope ).End )]"
-    }
-    text_single = {
-        position = { 318 400 }
-        text = "vvv_our_regiment"
-        visible = "[GetScriptedGui('vvv_gui_is_left').IsShown( GuiScope.SetRoot( GetPlayer.MakeScope ).End )]"
-    }
-
-    icon = {
-        position = { 464 384 }
-        size = { 165 47 }
-        spriteType = Texture
-        texture = "gfx/interface/vvv/formation_blue.png"
-        visible = "[GetScriptedGui('vvv_gui_is_center').IsShown( GuiScope.SetRoot( GetPlayer.MakeScope ).End )]"
-    }
-    text_single = {
-        position = { 512 400 }
-        text = "vvv_our_regiment"
-        visible = "[GetScriptedGui('vvv_gui_is_center').IsShown( GuiScope.SetRoot( GetPlayer.MakeScope ).End )]"
-    }
-
-    icon = {
-        position = { 658 384 }
-        size = { 165 47 }
-        spriteType = Texture
-        texture = "gfx/interface/vvv/formation_blue.png"
-        visible = "[GetScriptedGui('vvv_gui_is_right').IsShown( GuiScope.SetRoot( GetPlayer.MakeScope ).End )]"
-    }
-    text_single = {
-        position = { 706 400 }
-        text = "vvv_our_regiment"
-        visible = "[GetScriptedGui('vvv_gui_is_right').IsShown( GuiScope.SetRoot( GetPlayer.MakeScope ).End )]"
-    }
-
-    text_single = { position = { 251 481 } text = "vvv_allied_line" }
-    text_single = { position = { 251 515 } text = "vvv_drill_disclaimer" }
-
-    # Orders & metrics. Avoid overlapping the map with default button skins.
-    text_single = { position = { 877 112 } text = "vvv_stats_title" using = Font_Size_Medium }
-
-    text_single = { position = { 879 160 } text = "vvv_round_label" }
-    text_single = { position = { 1027 160 } text = "[GetPlayer.MakeScope.Var('vvv_round').GetValue|0]" }
-    text_single = { position = { 879 193 } text = "vvv_morale_label" }
-    text_single = { position = { 1027 193 } text = "[GetPlayer.MakeScope.Var('vvv_morale').GetValue|0]" }
-    text_single = { position = { 879 226 } text = "vvv_momentum_label" }
-    text_single = { position = { 1027 226 } text = "[GetPlayer.MakeScope.Var('vvv_momentum').GetValue|0]" }
-    text_single = { position = { 879 259 } text = "vvv_risk_label" }
-    text_single = { position = { 1027 259 } text = "[GetPlayer.MakeScope.Var('vvv_risk').GetValue|0]" }
-    text_single = { position = { 878 305 } text = "vvv_orders_title" using = Font_Size_Medium }
-
+    # Compact footer; the map has no disabled-button panels or overlay instructions.
+    text_single = { position = { 22 575 } size = { 325 28 } autoresize = no align = left|nobaseline fontsize = 17 text = "vvv_selected_archers" visible = "[GetScriptedGui('vvv_gui_selected_archers').IsShown( GuiScope.SetRoot( GetPlayer.MakeScope ).End )]" }
+    text_single = { position = { 22 575 } size = { 325 28 } autoresize = no align = left|nobaseline fontsize = 17 text = "vvv_selected_levies" visible = "[GetScriptedGui('vvv_gui_selected_levies').IsShown( GuiScope.SetRoot( GetPlayer.MakeScope ).End )]" }
+    text_single = { position = { 22 575 } size = { 325 28 } autoresize = no align = left|nobaseline fontsize = 17 text = "vvv_selected_light_infantry" visible = "[GetScriptedGui('vvv_gui_selected_light_infantry').IsShown( GuiScope.SetRoot( GetPlayer.MakeScope ).End )]" }
+    text_single = { position = { 356 575 } size = { 115 28 } autoresize = no align = left|nobaseline fontsize = 15 text = "vvv_round_label"  }
+    text_single = { position = { 465 575 } size = { 56 28 } autoresize = no align = left|nobaseline fontsize = 17 text = "[GetPlayer.MakeScope.Var('vvv_round').GetValue|0]"  }
+    text_single = { position = { 510 575 } size = { 115 28 } autoresize = no align = left|nobaseline fontsize = 15 text = "vvv_morale_label"  }
+    text_single = { position = { 619 575 } size = { 56 28 } autoresize = no align = left|nobaseline fontsize = 17 text = "[GetPlayer.MakeScope.Var('vvv_morale').GetValue|0]"  }
+    text_single = { position = { 670 575 } size = { 115 28 } autoresize = no align = left|nobaseline fontsize = 15 text = "vvv_momentum_label"  }
+    text_single = { position = { 779 575 } size = { 56 28 } autoresize = no align = left|nobaseline fontsize = 17 text = "[GetPlayer.MakeScope.Var('vvv_momentum').GetValue|0]"  }
+    text_single = { position = { 855 575 } size = { 115 28 } autoresize = no align = left|nobaseline fontsize = 15 text = "vvv_risk_label"  }
+    text_single = { position = { 964 575 } size = { 56 28 } autoresize = no align = left|nobaseline fontsize = 17 text = "[GetPlayer.MakeScope.Var('vvv_risk').GetValue|0]"  }
     button_standard = {
-        position = { 879 348 } size = { 171 32 }
+        position = { 22 614 } size = { 134 36 }
+        text = "vvv_reset"
+        onclick = "[GetScriptedGui('vvv_gui_reset').Execute( GuiScope.SetRoot( GetPlayer.MakeScope ).End )]"
+    }
+    button_standard = {
+        position = { 166 614 } size = { 142 36 }
         text = "vvv_move_left"
         onclick = "[GetScriptedGui('vvv_gui_left').Execute( GuiScope.SetRoot( GetPlayer.MakeScope ).End )]"
+        enabled = "[GetScriptedGui('vvv_gui_left').IsValid( GuiScope.SetRoot( GetPlayer.MakeScope ).End )]"
     }
     button_standard = {
-        position = { 879 388 } size = { 171 32 }
+        position = { 318 614 } size = { 142 36 }
         text = "vvv_move_center"
         onclick = "[GetScriptedGui('vvv_gui_center').Execute( GuiScope.SetRoot( GetPlayer.MakeScope ).End )]"
+        enabled = "[GetScriptedGui('vvv_gui_center').IsValid( GuiScope.SetRoot( GetPlayer.MakeScope ).End )]"
     }
     button_standard = {
-        position = { 879 428 } size = { 171 32 }
+        position = { 470 614 } size = { 142 36 }
         text = "vvv_move_right"
         onclick = "[GetScriptedGui('vvv_gui_right').Execute( GuiScope.SetRoot( GetPlayer.MakeScope ).End )]"
+        enabled = "[GetScriptedGui('vvv_gui_right').IsValid( GuiScope.SetRoot( GetPlayer.MakeScope ).End )]"
     }
     button_standard = {
-        position = { 879 478 } size = { 82 32 }
+        position = { 622 614 } size = { 105 36 }
         text = "vvv_hold"
         onclick = "[GetScriptedGui('vvv_gui_hold').Execute( GuiScope.SetRoot( GetPlayer.MakeScope ).End )]"
+        enabled = "[GetScriptedGui('vvv_gui_hold').IsValid( GuiScope.SetRoot( GetPlayer.MakeScope ).End )]"
     }
     button_standard = {
-        position = { 969 478 } size = { 82 32 }
+        position = { 737 614 } size = { 105 36 }
         text = "vvv_charge"
         onclick = "[GetScriptedGui('vvv_gui_charge').Execute( GuiScope.SetRoot( GetPlayer.MakeScope ).End )]"
+        enabled = "[GetScriptedGui('vvv_gui_charge').IsValid( GuiScope.SetRoot( GetPlayer.MakeScope ).End )]"
     }
-    button_standard = { position = { 35 513 } size = { 176 35 } text = "vvv_reset" onclick = "[GetScriptedGui('vvv_gui_reset').Execute( GuiScope.SetRoot( GetPlayer.MakeScope ).End )]" }
-    button_standard = { position = { 879 521 } size = { 171 35 } text = "vvv_next" onclick = "[GetScriptedGui('vvv_gui_next').Execute( GuiScope.SetRoot( GetPlayer.MakeScope ).End )]" }
+    button_standard = {
+        position = { 852 614 } size = { 186 36 }
+        text = "vvv_next"
+        onclick = "[GetScriptedGui('vvv_gui_next').Execute( GuiScope.SetRoot( GetPlayer.MakeScope ).End )]"
+        enabled = "[GetScriptedGui('vvv_gui_next').IsValid( GuiScope.SetRoot( GetPlayer.MakeScope ).End )]"
+    }
 }
