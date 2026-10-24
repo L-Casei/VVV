@@ -24,7 +24,7 @@ jobs:
         run: |
           python - <<'PY'
           from zipfile import ZipFile
-          with ZipFile("dist/VVV-0.1.1.zip") as archive:
+          with ZipFile("dist/VVV-0.1.2.zip") as archive:
               required = {
                   "VVV.mod",
                   "VVV/descriptor.mod",

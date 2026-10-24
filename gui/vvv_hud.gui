@@ -1,13 +1,14 @@
-# Standalone widget; does not overwrite vanilla HUD or Divine Intervention widgets.
+# Debug-only launcher. The intended final entrypoint is the CK3 battle window.
+# Never show a permanent global Tactics button during normal gameplay.
 window = {
     name = "vvv_hud"
     layer = top
-    size = { 104 37 }
+    size = { 98 34 }
     parentanchor = right|bottom
-    position = { -35 -145 }
-    visible = "[GetPlayer.IsValid]"
+    position = { -28 -140 }
+    visible = "[And( GetPlayer.IsValid, InDebugMode )]"
     button_standard = {
-        size = { 104 33 }
+        size = { 98 30 }
         text = "vvv_hud_button"
         tooltip = "vvv_hud_tooltip"
         onclick = "[GetVariableSystem.Toggle('vvv_open_map')]"

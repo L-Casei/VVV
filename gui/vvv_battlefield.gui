@@ -1,142 +1,135 @@
-# Tactics v0.1.1: centered experimental 2D battle board.
-# Pure UI sandbox. It does NOT read real combat or change vanilla battles.
+# VVV 0.1.2 -- visually isolated tactical planning sandbox.
+# IMPORTANT: only a scripted widget, NOT hooked to the vanilla battle view yet.
 window = {
     name = "vvv_battlefield"
     layer = top
-    size = { 860 570 }
+    size = { 1090 606 }
     parentanchor = center
     movable = yes
     visible = "[And( GetPlayer.IsValid, GetVariableSystem.Exists('vvv_open_map') )]"
     using = Window_Background
 
-    text_single = {
-        position = { 28 18 }
-        text = "vvv_panel_title"
-        using = Font_Size_Large
-    }
-    text_single = { position = { 29 53 } text = "vvv_panel_subtitle" }
-    button_standard = {
-        position = { 731 18 }
-        size = { 102 30 }
-        text = "vvv_close"
-        onclick = "[GetVariableSystem.Clear('vvv_open_map')]"
-    }
+    text_single = { position = { 31 21 } text = "vvv_panel_title" using = Font_Size_Large }
+    text_single = { position = { 32 58 } text = "vvv_panel_subtitle" }
+    button_standard = { position = { 969 20 } size = { 93 29 } text = "vvv_close" onclick = "[GetVariableSystem.Clear('vvv_open_map')]" }
 
-    # Custom map asset drawn for VVV. Foreground regiment tokens overlay it.
+    # Keep flank controls separate from the battlefield.
+    button_standard = { position = { 21 99 } size = { 205 460 } enabled = no }
+    button_standard = { position = { 862 99 } size = { 204 460 } enabled = no }
+    text_single = { position = { 35 113 } text = "vvv_left_panel_title" using = Font_Size_Medium }
+    text_single = { position = { 35 158 } text = "vvv_left_panel_step1" }
+    text_single = { position = { 35 188 } text = "vvv_left_panel_step2" }
+    text_single = { position = { 35 218 } text = "vvv_left_panel_step3" }
+    text_single = { position = { 35 281 } text = "vvv_left_panel_terrain" using = Font_Size_Medium }
+    text_single = { position = { 35 326 } text = "vvv_terrain_left" }
+    text_single = { position = { 35 358 } text = "vvv_terrain_center" }
+    text_single = { position = { 35 390 } text = "vvv_terrain_right" }
+    text_single = { position = { 35 455 } text = "vvv_left_panel_note" }
+
+    text_single = { position = { 251 106 } text = "vvv_enemy_line" }
+    text_single = { position = { 695 106 } text = "vvv_field_label" }
     icon = {
-        position = { 25 102 }
-        size = { 810 290 }
+        position = { 247 139 }
+        size = { 590 330 }
+        spriteType = Texture
         texture = "gfx/interface/vvv/tactical_field.png"
     }
-    text_single = { position = { 41 109 } text = "vvv_enemy_line" }
-    text_single = { position = { 674 109 } text = "vvv_field_label" }
 
-    # Opponent formation, fixed placeholder, not live army data.
-    icon = { position = { 68 143 } size = { 184 50 } texture = "gfx/interface/vvv/formation_red.png" }
-    text_single = { position = { 126 158 } text = "vvv_enemy_left" }
-    # Opponent formation, fixed placeholder, not live army data.
-    icon = { position = { 338 143 } size = { 184 50 } texture = "gfx/interface/vvv/formation_red.png" }
-    text_single = { position = { 396 158 } text = "vvv_enemy_center" }
-    # Opponent formation, fixed placeholder, not live army data.
-    icon = { position = { 608 143 } size = { 184 50 } texture = "gfx/interface/vvv/formation_red.png" }
-    text_single = { position = { 666 158 } text = "vvv_enemy_right" }
-    text_single = { position = { 134 256 } text = "vvv_terrain_left" }
-    text_single = { position = { 404 256 } text = "vvv_terrain_center" }
-    text_single = { position = { 671 256 } text = "vvv_terrain_right" }
-    text_single = { position = { 41 297 } text = "vvv_allied_line" }
-    # Initialized-only reminder. Until Reset, no friendly marker is shown.
-    text_single = {
-        position = { 326 318 }
-        text = "vvv_prompt_reset"
-        visible = "[Not( GetPlayer.MakeScope.Var('vvv_drill_active').IsSet )]"
-    }
+    icon = { position = { 270 176 } size = { 165 47 } spriteType = Texture texture = "gfx/interface/vvv/formation_red.png" }
+    text_single = { position = { 318 191 } text = "vvv_enemy_left" }
+    text_single = { position = { 340 289 } text = "vvv_terrain_left" }
+
+    icon = { position = { 464 176 } size = { 165 47 } spriteType = Texture texture = "gfx/interface/vvv/formation_red.png" }
+    text_single = { position = { 512 191 } text = "vvv_enemy_center" }
+    text_single = { position = { 534 289 } text = "vvv_terrain_center" }
+
+    icon = { position = { 658 176 } size = { 165 47 } spriteType = Texture texture = "gfx/interface/vvv/formation_red.png" }
+    text_single = { position = { 706 191 } text = "vvv_enemy_right" }
+    text_single = { position = { 728 289 } text = "vvv_terrain_right" }
+
+    # Player formation is only visible after the user initializes the drill.
+    text_single = { position = { 395 339 } text = "vvv_prompt_reset" visible = "[Not( GetPlayer.MakeScope.Var('vvv_drill_active').IsSet )]" }
 
     icon = {
-        position = { 68 324 }
-        size = { 184 50 }
+        position = { 270 384 }
+        size = { 165 47 }
+        spriteType = Texture
         texture = "gfx/interface/vvv/formation_blue.png"
         visible = "[GetScriptedGui('vvv_gui_is_left').IsShown( GuiScope.SetRoot( GetPlayer.MakeScope ).End )]"
     }
     text_single = {
-        position = { 126 341 }
+        position = { 318 400 }
         text = "vvv_our_regiment"
         visible = "[GetScriptedGui('vvv_gui_is_left').IsShown( GuiScope.SetRoot( GetPlayer.MakeScope ).End )]"
     }
-    icon = {
-        position = { 338 324 }
-        size = { 184 50 }
-        texture = "gfx/interface/vvv/formation_blue.png"
-        visible = "[GetScriptedGui('vvv_gui_is_center').IsShown( GuiScope.SetRoot( GetPlayer.MakeScope ).End )]"
-    }
-    text_single = {
-        position = { 396 341 }
-        text = "vvv_our_regiment"
-        visible = "[GetScriptedGui('vvv_gui_is_center').IsShown( GuiScope.SetRoot( GetPlayer.MakeScope ).End )]"
-    }
-    icon = {
-        position = { 608 324 }
-        size = { 184 50 }
-        texture = "gfx/interface/vvv/formation_blue.png"
-        visible = "[GetScriptedGui('vvv_gui_is_right').IsShown( GuiScope.SetRoot( GetPlayer.MakeScope ).End )]"
-    }
-    text_single = {
-        position = { 666 341 }
-        text = "vvv_our_regiment"
-        visible = "[GetScriptedGui('vvv_gui_is_right').IsShown( GuiScope.SetRoot( GetPlayer.MakeScope ).End )]"
-    }
-    # Tactical indicators, driven by persisted player-character variables.
 
-    text_single = { position = { 62 417 } text = "vvv_round_label" }
-    text_single = { position = { 143 417 } text = "[GetPlayer.MakeScope.Var('vvv_round').GetValue|0]" }
-    text_single = { position = { 258 417 } text = "vvv_morale_label" }
-    text_single = { position = { 349 417 } text = "[GetPlayer.MakeScope.Var('vvv_morale').GetValue|0]" }
-    text_single = { position = { 464 417 } text = "vvv_momentum_label" }
-    text_single = { position = { 576 417 } text = "[GetPlayer.MakeScope.Var('vvv_momentum').GetValue|0]" }
-    text_single = { position = { 680 417 } text = "vvv_risk_label" }
-    text_single = { position = { 762 417 } text = "[GetPlayer.MakeScope.Var('vvv_risk').GetValue|0]" }
-    # Actions: movement, hold and charge.
+    icon = {
+        position = { 464 384 }
+        size = { 165 47 }
+        spriteType = Texture
+        texture = "gfx/interface/vvv/formation_blue.png"
+        visible = "[GetScriptedGui('vvv_gui_is_center').IsShown( GuiScope.SetRoot( GetPlayer.MakeScope ).End )]"
+    }
+    text_single = {
+        position = { 512 400 }
+        text = "vvv_our_regiment"
+        visible = "[GetScriptedGui('vvv_gui_is_center').IsShown( GuiScope.SetRoot( GetPlayer.MakeScope ).End )]"
+    }
+
+    icon = {
+        position = { 658 384 }
+        size = { 165 47 }
+        spriteType = Texture
+        texture = "gfx/interface/vvv/formation_blue.png"
+        visible = "[GetScriptedGui('vvv_gui_is_right').IsShown( GuiScope.SetRoot( GetPlayer.MakeScope ).End )]"
+    }
+    text_single = {
+        position = { 706 400 }
+        text = "vvv_our_regiment"
+        visible = "[GetScriptedGui('vvv_gui_is_right').IsShown( GuiScope.SetRoot( GetPlayer.MakeScope ).End )]"
+    }
+
+    text_single = { position = { 251 481 } text = "vvv_allied_line" }
+    text_single = { position = { 251 515 } text = "vvv_drill_disclaimer" }
+
+    # Orders & metrics. Avoid overlapping the map with default button skins.
+    text_single = { position = { 877 112 } text = "vvv_stats_title" using = Font_Size_Medium }
+
+    text_single = { position = { 879 160 } text = "vvv_round_label" }
+    text_single = { position = { 1027 160 } text = "[GetPlayer.MakeScope.Var('vvv_round').GetValue|0]" }
+    text_single = { position = { 879 193 } text = "vvv_morale_label" }
+    text_single = { position = { 1027 193 } text = "[GetPlayer.MakeScope.Var('vvv_morale').GetValue|0]" }
+    text_single = { position = { 879 226 } text = "vvv_momentum_label" }
+    text_single = { position = { 1027 226 } text = "[GetPlayer.MakeScope.Var('vvv_momentum').GetValue|0]" }
+    text_single = { position = { 879 259 } text = "vvv_risk_label" }
+    text_single = { position = { 1027 259 } text = "[GetPlayer.MakeScope.Var('vvv_risk').GetValue|0]" }
+    text_single = { position = { 878 305 } text = "vvv_orders_title" using = Font_Size_Medium }
 
     button_standard = {
-        position = { 47 459 }
-        size = { 145 35 }
+        position = { 879 348 } size = { 171 32 }
         text = "vvv_move_left"
         onclick = "[GetScriptedGui('vvv_gui_left').Execute( GuiScope.SetRoot( GetPlayer.MakeScope ).End )]"
     }
     button_standard = {
-        position = { 199 459 }
-        size = { 145 35 }
+        position = { 879 388 } size = { 171 32 }
         text = "vvv_move_center"
         onclick = "[GetScriptedGui('vvv_gui_center').Execute( GuiScope.SetRoot( GetPlayer.MakeScope ).End )]"
     }
     button_standard = {
-        position = { 351 459 }
-        size = { 145 35 }
+        position = { 879 428 } size = { 171 32 }
         text = "vvv_move_right"
         onclick = "[GetScriptedGui('vvv_gui_right').Execute( GuiScope.SetRoot( GetPlayer.MakeScope ).End )]"
     }
     button_standard = {
-        position = { 503 459 }
-        size = { 139 35 }
+        position = { 879 478 } size = { 82 32 }
         text = "vvv_hold"
         onclick = "[GetScriptedGui('vvv_gui_hold').Execute( GuiScope.SetRoot( GetPlayer.MakeScope ).End )]"
     }
     button_standard = {
-        position = { 650 459 }
-        size = { 165 35 }
+        position = { 969 478 } size = { 82 32 }
         text = "vvv_charge"
         onclick = "[GetScriptedGui('vvv_gui_charge').Execute( GuiScope.SetRoot( GetPlayer.MakeScope ).End )]"
     }
-    button_standard = {
-        position = { 47 513 }
-        size = { 235 37 }
-        text = "vvv_reset"
-        onclick = "[GetScriptedGui('vvv_gui_reset').Execute( GuiScope.SetRoot( GetPlayer.MakeScope ).End )]"
-    }
-    text_single = { position = { 316 519 } text = "vvv_drill_disclaimer" }
-    button_standard = {
-        position = { 605 513 }
-        size = { 210 37 }
-        text = "vvv_next"
-        onclick = "[GetScriptedGui('vvv_gui_next').Execute( GuiScope.SetRoot( GetPlayer.MakeScope ).End )]"
-    }
+    button_standard = { position = { 35 513 } size = { 176 35 } text = "vvv_reset" onclick = "[GetScriptedGui('vvv_gui_reset').Execute( GuiScope.SetRoot( GetPlayer.MakeScope ).End )]" }
+    button_standard = { position = { 879 521 } size = { 171 35 } text = "vvv_next" onclick = "[GetScriptedGui('vvv_gui_next').Execute( GuiScope.SetRoot( GetPlayer.MakeScope ).End )]" }
 }

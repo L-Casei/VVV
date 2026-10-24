@@ -8,7 +8,7 @@ def build():
     issues = validate()
     if issues:
         raise SystemExit("\n".join(issues))
-    destination = ROOT / "dist" / "VVV-0.1.1.zip"
+    destination = ROOT / "dist" / "VVV-0.1.2.zip"
     destination.parent.mkdir(exist_ok=True)
     files = [ROOT / "descriptor.mod", ROOT / "thumbnail.png"]
     for directory, extension in (("common", ".txt"), ("events", ".txt"),

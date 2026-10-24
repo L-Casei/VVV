@@ -1,27 +1,22 @@
-# CK3 tactical drill v0.1.1 test checklist
+# Tactics v0.1.2 | UI acceptance test
 
-## Already verified by user's screenshot
-- The v0.1.0 custom CK3 panel opens on the map, and the standalone button appears.
-- Window positioning on 1366×727 was unsatisfactory (too far left).
-- An uninitialized drill shows all counters at 0 and no own regiment marker.
+## Context
+This build responds to the unreadable, badly placed v0.1.1 interface in a live vanilla/Divine Intervention campaign.
 
-## Required for updated 0.1.1
-1. Reload CK3 with v0.1.1 installed, ideally with `-debug_mode -develop`.
-2. Verify compact **Tactics** button and **centered** field panel, on a 1366×727 monitor.
-3. Verify the map image is visible and red formation counters render.
-4. Press **Reset drill**: one blue formation must appear in the centre; morale starts at 80.
-5. Press left/right/centre; blue formation should move between three fixed slots.
-6. Charge and hold should adjust the numbers. Next turn increases turn count.
-7. Verify Spanish localization and correct closing/reopening behavior.
-8. Enable **Divine Intervention** alongside VVV, load a new game, and repeat steps 2–6.
-9. Fight a normal CK3 battle; combat must stay unchanged.
-10. Inspect `Documents/Paradox Interactive/Crusader Kings III/logs/error.log`, especially errors referencing `vvv_`, `GuiScope`, `Window_Background`, or the PNG assets.
+## Start
+1. Update the mod, **close and restart CK3** (textures can stay cached otherwise).
+2. Launch CK3 with `-debug_mode` in its Steam launch options.
+3. Start/load a vanilla campaign (you can leave Divine Intervention active in a second run).
+4. Locate the small `Tactics` debug opener bottom-right. **It is hidden in normal mode.**
+5. Open the 1090×606 central tactics panel. Check the battle map renders as a **light, opaque, readable** field rather than dark see-through shadow.
+6. Confirm left instructions / centre terrain and banners / right commands don't overlap at 1366×768 and 1647×896 screen resolutions.
+7. Press `Reset drill`; check centre blue marker appears, morale becomes 80, round is 0.
+8. Press Deploy left, centre, right. Watch the blue marker change lanes.
+9. Verify Hold / Charge modify sandbox variables; Next advances the round.
+10. Fight a normal CK3 battle. It must remain vanilla.
+11. Close the game, remove `-debug_mode`, restart. **There must be no persistent Tactics button in the world-map HUD.**
 
-### Before reporting a failure
-If the blue counter does not spawn after clicking Reset, send the first VVV-related error lines and the game version. The panel rendering does not prove that scripted GUI effects are executing.
+## Important limitations
+This is **not yet** the final battle-window button. The correct version-dependent vanilla CK3 battle GUI file, battle model scope and interaction must be checked before overwriting the game GUI; this prototype deliberately avoids a fragile blind override.
 
-## Static verification (Python 3.10+)
-```bash
-python -m unittest discover -s tests -v
-python -m tools.package
-```
+If rendering or the drill actions fail, send the first relevant lines from `Documents/Paradox Interactive/Crusader Kings III/logs/error.log` plus a screenshot.

@@ -23,3 +23,11 @@
 - [ ] Commander position, wounds, capture, death risk
 - [ ] Combat AI doctrines, weather and terrain
 - [ ] Manual/auto switch and stability for saves
+
+## v0.1.2 visual acceptance gate
+- [x] Rebuild 3-column panel hierarchy around one readable tactical board
+- [x] Replace palette artwork with opaque 24-bit field and formation plates
+- [x] Hide the global opener except in debug mode
+- [ ] In-game screenshot confirmation (CK3 GUI scripting cannot be verified by GitHub CI)
+- [ ] Locate and inspect the *actual* CK3 battle view GUI, then place Tactics beside battle actions rather than on world-map HUD
+- [ ] Test coexistence with Divine Intervention
